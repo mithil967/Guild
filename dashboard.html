@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Guild Bot • Dashboard</title><link rel="stylesheet" href="/static/style.css"></head>
+<body><div class="shell"><aside class="sidebar"><div class="brand"><div class="brand-mark">GB</div><div><b>Guild Bot</b><small>CONTROL CENTER</small></div></div><div class="nav active">▦ &nbsp; Overview</div><div class="nav">◷ &nbsp; Activity logs</div><div class="side-note">SAFE DEMO MODE<br><span>No external game connection</span></div></aside>
+<main class="main"><header><div><p class="eyebrow">WORKSPACE / OVERVIEW</p><h1>Dashboard</h1></div><form method="post" action="/logout"><button class="ghost">Sign out ↗</button></form></header>
+<section class="welcome"><div><p class="eyebrow">GUILD BOT SYSTEM</p><h2>Your control room.</h2><p class="muted">Monitor the background demo worker and manage its run state.</p></div><div class="orb">✦</div></section>
+<section class="stats"><article class="card"><span class="muted">WORKER STATUS</span><strong id="state">Loading…</strong><small id="mode">Checking service</small></article><article class="card"><span class="muted">HEARTBEATS</span><strong id="cycles">0</strong><small>Demo cycles completed</small></article><article class="card"><span class="muted">STARTED AT</span><strong class="date" id="started">—</strong><small>UTC timestamp</small></article></section>
+<section class="card controls"><div><p class="eyebrow">BOT CONTROLS</p><h3>Worker management</h3><p class="muted">This is a safe demo process. It does not send game requests.</p></div><div class="actions"><input id="label" value="Dashboard demo run" maxlength="60" aria-label="Run label"><button id="start" class="primary">Start worker</button><button id="stop" class="danger">Stop worker</button></div></section>
+<section class="card logs"><div class="log-head"><div><p class="eyebrow">LIVE ACTIVITY</p><h3>Recent logs</h3></div><span class="live"><i></i> AUTO REFRESH</span></div><div id="loglist" class="loglist"><p class="muted">Loading logs…</p></div></section>
+<footer>Guild Bot Dashboard <span>•</span> Render-ready Flask app</footer></main></div>
+<script>
+async function refresh(){
+ try{
+  const r=await fetch('/api/status'); if(r.status===401){location.href='/';return;}
+  const s=await r.json();
+  document.getElementById('state').textContent=s.running?'RUNNING':'STOPPED';
+  document.getElementById('state').className=s.running?'running':'stopped';
+  document.getElementById('cycles').textContent=s.cycles;
+  document.getElementById('started').textContent=s.started_at?new Date(s.started_at).toLocaleString():'—';
+  document.getElementById('mode').textContent=s.mode;
+  document.getElementById('loglist').innerHTML=s.logs.length?s.logs.map(x=>'<div class="logline">'+escapeHtml(x)+'</div>').join(''):'<p class="muted">No activity yet. Start the worker to see logs.</p>';
+ }catch(e){document.getElementById('state').textContent='OFFLINE';}
+}
+function escapeHtml(s){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+async function action(path,body={}){const r=await fetch(path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});if(r.status===401){location.href='/';return;}await refresh();}
+document.getElementById('start').onclick=()=>action('/api/start',{label:document.getElementById('label').value});
+document.getElementById('stop').onclick=()=>action('/api/stop');
+refresh();setInterval(refresh,3000);
+</script></body></html>

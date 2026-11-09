@@ -1,0 +1,7 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Guild Bot • Sign in</title><link rel="stylesheet" href="/static/style.css"></head>
+<body class="auth"><main class="login card"><div class="brand-mark">GB</div><p class="eyebrow">CONTROL CENTER</p><h1>Guild Bot</h1><p class="muted">Sign in to open your dashboard.</p>
+{% if error %}<div class="error">{{ error }}</div>{% endif %}
+<form method="post"><label>Admin password</label><input type="password" name="password" required autocomplete="current-password" placeholder="Enter dashboard password"><button class="primary" type="submit">Sign in <span>→</span></button></form>
+<p class="tiny">Access is controlled by your Render ADMIN_PASSWORD setting.</p></main></body></html>
